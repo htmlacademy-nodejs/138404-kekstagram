@@ -3,7 +3,9 @@
 const express = require(`express`);
 const path = require(`path`);
 const colors = require(`colors/safe`);
-const postRouter = require(`./routes/posts`);
+const postsStore = require(`./posts/store`);
+const imageStore = require(`./images/store`);
+const postRouter = require(`./posts/route`)(postsStore, imageStore);
 
 const {
   printCommand,

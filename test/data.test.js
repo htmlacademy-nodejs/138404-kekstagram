@@ -4,7 +4,7 @@ const {
   generateEntity,
   effects,
   convertDaysToMilliseconds
-} = require(`../src/generate`);
+} = require(`./mock/generate`);
 const assert = require(`assert`);
 
 const isStringTrue = (string) => assert.equal(typeof string, `string`);

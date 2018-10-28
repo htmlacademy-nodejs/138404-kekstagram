@@ -5,7 +5,7 @@ const colors = require(`colors/safe`);
 
 const {
   generateData
-} = require(`./generate`);
+} = require(`../test/mock/generate`);
 
 const {
   exitSucces,

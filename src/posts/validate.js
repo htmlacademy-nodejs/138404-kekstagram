@@ -1,6 +1,6 @@
 'use strict';
 
-const ValidateError = require(`../../error/validate`);
+const ValidateError = require(`../error/validate`);
 const data = require(`./data`);
 
 const HASHTAGS = {
@@ -41,10 +41,10 @@ const validate = (body) => {
 
   if (filename) {
     if (!data.fileType.test(filename.mimetype)) {
-      setError(`file`, `Field 'filename' must be a image type!`);
+      setError(`fileName`, `Field 'filename' must be a image type!`);
     }
   } else {
-    setError(`file`, `Field 'filename' is required!`);
+    setError(`fileName`, `Field 'filename' is required!`);
   }
 
   if (scale !== undefined) {

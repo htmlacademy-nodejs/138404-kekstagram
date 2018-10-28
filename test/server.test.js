@@ -2,49 +2,49 @@
 
 const supertest = require(`supertest`);
 const assert = require(`assert`);
-const {
-  app
-} = require(`../src/server`);
+const express = require(`express`);
 
-const sent = {
-  scale: 0,
-  effect: `marvin`,
-  filename: {
-    mimetype: `image/png`,
-    originalname: `keks.png`
-  }
-};
+const postsStoreMock = require(`./mock/posts-store-mock`);
+const imageStoreMock = require(`./mock/image-store-mock`);
+const postsRouter = require(`../src/posts/route`)(
+    postsStoreMock,
+    imageStoreMock
+);
+
+const NUMBER_POSTS_ELEMENTS = 17;
+
+const app = express();
+app.use(`/api/posts`, postsRouter);
 
 describe(`GET`, () => {
-  describe(`GET /api/posts`, () => {
-    it(`get all posts`, async () => {
-      const response = await supertest(app)
-        .get(`/api/posts`)
-        .set(`Accept`, `application/json`)
-        .expect(200)
-        .expect(`Content-Type`, /json/);
-      const posts = response.body;
-      assert.strictEqual(posts.length, 17);
-    });
-
-    it(`get all posts with / at the end`, async () => {
-      const response = await supertest(app)
-        .get(`/api/posts/`)
-        .set(`Accept`, `application/json`)
-        .expect(200)
-        .expect(`Content-Type`, /json/);
-      const posts = response.body;
-      assert.strictEqual(posts.length, 17);
-    });
-
-    it(`get data from unknown resource`, async () =>
-      await supertest(app)
-      .get(`/api/oneone`)
+  it(`get all posts`, async () => {
+    const response = await supertest(app)
+      .get(`/api/posts`)
       .set(`Accept`, `application/json`)
-      .expect(404)
-      .expect(`Page was not found`)
-      .expect(`Content-Type`, /html/));
+      .expect(200)
+      .expect(`Content-Type`, /json/);
+    const posts = response.body;
+    assert.strictEqual(posts.length, NUMBER_POSTS_ELEMENTS);
   });
+
+  it(`get all posts with / at the end`, async () => {
+    const response = await supertest(app)
+      .get(`/api/posts/`)
+      .set(`Accept`, `application/json`)
+      .expect(200)
+      .expect(`Content-Type`, /json/);
+    const posts = response.body;
+    assert.strictEqual(posts.length, NUMBER_POSTS_ELEMENTS);
+  });
+
+  //   it(`get data from unknown resource`, async () =>
+  //     await supertest(app)
+  //       .get(`/api/oneone`)
+  //       .set(`Accept`, `application/json`)
+  //       .expect(404)
+  //       .expect(`Page was not found`)
+  //       .expect(`Content-Type`, /html/));
+  // });
 
   describe(`GET /api/posts/:date`, () => {
     // it(`get post with date 1 March 2029`, async () => {
@@ -58,7 +58,7 @@ describe(`GET`, () => {
     //   assert.strictEqual(post.date, date);
     // });
 
-    it(`get post with / at the end`, async () => {
+    it(`get post with unknown date`, async () => {
       const date = new Date(2029, 2, 1);
       return await supertest(app)
         .get(`/api/posts/${date}/`)
@@ -72,52 +72,20 @@ describe(`GET`, () => {
 });
 
 describe(`POST`, () => {
-  describe(`POST /api/posts/`, () => {
-    it(`send post as json`, async () => {
-      const response = await supertest(app)
+  describe(``, () => {
+    it(`POST /api/posts/`, async () => {
+      await supertest(app)
         .post(`/api/posts`)
-        .send(sent)
-        .set(`Accept`, `application/json`)
-        .set(`Content-Type`, `application/json`)
-        .expect(200)
-        .expect(`Content-Type`, /json/);
-      const post = response.body;
-      assert.deepEqual(post, sent);
-    });
-
-    it(`send post as multipart/form-data`, async () => {
-      const response = await supertest(app)
-        .post(`/api/posts`)
-        .field(`scale`, `0`)
-        .field(`effect`, `marvin`)
+        .field(`scale`, 77)
+        .field(`effect`, `chrome`)
         .attach(`filename`, `test/fixtures/keks.png`)
-        .set(`Accept`, `application/json`)
+        .set(`Accept`, `image/png`)
         .set(`Content-Type`, `multipart/form-data`)
         .expect(200)
-        .expect(`Content-Type`, /json/);
-      const post = response.body;
-      assert.deepEqual(post, sent);
+        .expect(`Content-Type`, /image/);
     });
 
-    it(`send post without required field as json`, async () => {
-      const sentError = {
-        effect: `marvin`,
-        filename: {
-          mimetype: `image/png`,
-          originalname: `keks.png`
-        }
-      };
-      const response = await supertest(app)
-        .post(`/api/posts`)
-        .send(sentError)
-        .set(`Content-Type`, `application/json`)
-        .expect(400)
-        .expect(`Content-Type`, /json/);
-      const post = response.body;
-      assert.deepEqual(post[0].fieldName, `scale`);
-    });
-
-    it(`send post with error scale field as multipart/form-data`, async () => {
+    it(`POST /api/posts/ without require param`, async () => {
       const response = await supertest(app)
         .post(`/api/posts`)
         .field(`scale`, `200`)
