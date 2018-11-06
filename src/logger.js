@@ -1,11 +1,24 @@
 'use strict';
 
 const winston = require(`winston`);
-const {createLogger, format, transports} = winston;
-const {combine, timestamp} = format;
+
+const {
+  createLogger,
+  format,
+  transports
+} = winston;
+
+const {
+  combine,
+  timestamp
+} = format;
+
+const {
+  SERVER_LOG_LEVEL = `info`
+} = process.env;
 
 const logger = createLogger({
-  level: `info`,
+  level: `${SERVER_LOG_LEVEL}`,
   format: format.json(),
   transports: [
     new transports.File({
