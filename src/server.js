@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 const express = require(`express`);
 const path = require(`path`);
 const postsStore = require(`./posts/store`);
 const imageStore = require(`./images/store`);
-const postRouter = require(`./posts/route`)(postsStore, imageStore);
+const postRouter = require(`./posts/router/route`)(postsStore, imageStore);
 const logger = require(`./logger`);
 const {ERROR_HANDLER, NOT_FOUND_HANDLER} = require(`./error/handlers`);
 const NotImplementedError = require(`./error/not-implemented-error`);
